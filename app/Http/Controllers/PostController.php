@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Post;
+use Illuminate\Http\Request;
+
+class PostController extends Controller
+{
+    public function index()
+    {
+        return Post::with('user')->get();
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'content' => 'required|string',
+            'user_id' => 'required|exists:users,id'
+        ]);
+
+        $post = Post::create($validated);
+        return response()->json($post, 201);
+    }
+
+    public function show($id)
+    {
+        return Post::with('user')->findOrFail($id);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $post = Post::findOrFail($id);
+        $post->update($request->all());
+        return $post;
+    }
+
+    public function destroy($id)
+    {
+        $post = Post::findOrFail($id);
+        $post->delete();
+        return response()->json(null, 204);
+    }
+}
