@@ -16,12 +16,13 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string',
-            'content' => 'required|string',
+            'body' => 'required|string',
             'user_id' => 'required|exists:users,id'
         ]);
 
         $post = Post::create($validated);
-        return response()->json($post, 201);
+
+        return response()->json(Post::with('user')->find($post->id), 201);
     }
 
     public function show($id)
@@ -33,7 +34,8 @@ class PostController extends Controller
     {
         $post = Post::findOrFail($id);
         $post->update($request->all());
-        return $post;
+
+        return response()->json($post);
     }
 
     public function destroy($id)
