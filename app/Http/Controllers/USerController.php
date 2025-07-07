@@ -15,6 +15,7 @@ class UserController extends Controller
     public function show($id)
     {
         return User::with('address')->findOrFail($id);
+        return $user->posts;
     }
 
     public function store(Request $request)

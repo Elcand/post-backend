@@ -44,4 +44,11 @@ class PostController extends Controller
         $post->delete();
         return response()->json(null, 204);
     }
+
+    public function getUserPosts($userId)
+    {
+        $posts = Post::where('user_id', $userId)->get();
+
+        return response()->json($posts);
+    }
 }
