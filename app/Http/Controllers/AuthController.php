@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash; 
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -17,14 +18,12 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        // Cek kredensial
         if (!Auth::attempt($request->only('email', 'password'), true)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
 
-        // Regenerate session agar aman
         $request->session()->regenerate();
 
         return response()->json(['message' => 'Login success']);
@@ -41,10 +40,16 @@ class AuthController extends Controller
         $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
-            'password' => Hash::make($request->password), // <- jangan simpan plain password!
+            'password' => Hash::make($request->password),
         ]);
 
-        return response()->json(['message' => 'Registration success']);
+        Auth::login($user, true);
+        $request->session()->regenerate();
+
+        return response()->json([
+            'message' => 'Registration success',
+            'user'    => $user,
+        ]);
     }
 
     public function logout(Request $request)
