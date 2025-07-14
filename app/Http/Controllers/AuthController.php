@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-        public function login(Request $request)
+    public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
@@ -26,7 +26,10 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return response()->json(['message' => 'Login success']);
+        return response()->json([
+            'message' => 'Login success',
+            'user' => Auth::user()
+        ]);
     }
 
     public function register(Request $request)
